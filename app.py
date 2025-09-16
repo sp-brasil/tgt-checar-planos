@@ -47,7 +47,7 @@ def get_esim_plans():
         request_body = request.get_json() or {}
         service_name = "queryEsimProductListByParams"
         endpoint = "productApi/queryEsimProductListByParams"
-        data_payload = { "page": request_body.get("page", 1), "pageSize": request_body.get("pageSize", 100), "productType": request_body.get("productType", ""), "lang": request_body.get("lang", "en") }
+        data_payload = { "page": request_body.get("page", 1), "pageSize": request_body.get("pageSize", 5000), "productType": request_body.get("productType", ""), "lang": request_body.get("lang", "en") }
         data_str = json.dumps(data_payload)
         encrypted_data = aes_encrypt(data_str)
         request_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
