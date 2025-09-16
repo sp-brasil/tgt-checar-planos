@@ -6,19 +6,19 @@ import hashlib
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import traceback
-import math # Importamos a biblioteca de matemática
+import math
 
 app = Flask(__name__)
 
-# --- Credenciais e Configurações ---
+# --- Credenciais de Produção ---
 ACCOUNT_ID = "RE_simpremium"
 SIGN_KEY = "3GIJ0119BNP3G6UN6A5I6BB4PZS2QVWQ"
 SECRET_KEY = "UYHUR49SEVWFR6WI"
-VECTOR = "OQ75CK0MYKQDKC0O" # Corrigido conforme sua última informação
+VECTOR = "OQ75CK0MYKQDKC0O"
 API_VERSION = "1.0"
 BASE_URL = "http://enterpriseapi.tugegroup.com:8060/api-publicappmodule/"
 
-# --- Funções de Criptografia (sem alterações) ---
+# --- Funções de Criptografia e Assinatura ---
 def aes_encrypt(data_str):
     key = SECRET_KEY.encode('utf-8')
     iv = VECTOR.encode('utf-8')
@@ -41,7 +41,7 @@ def create_signature(service_name, request_time, encrypted_data):
     md5_hash = hashlib.md5(raw_string.encode('utf-8')).hexdigest()
     return md5_hash
 
-# --- NOVA ROTA OTIMIZADA PARA BUSCAR TUDO ---
+# --- Rota Otimizada para Buscar Todos os Planos ---
 @app.route('/get_all_plans', methods=['POST'])
 def get_all_esim_plans():
     all_plans = []
@@ -66,13 +66,13 @@ def get_all_esim_plans():
         if response_json.get("code") != "0000":
             return jsonify({"error": "Failed on first API call", "details": response_json}), 400
 
-        decrypted_data = json.loads(aes_decrypt(response_json["data"]))
-        total_records = decrypted_data.get("total", 0)
+        total_records = response_json.get("total", 0)
+        decrypted_data_list = json.loads(aes_decrypt(response_json["data"]))
         
         if total_records == 0:
             return jsonify({"total": 0, "data": []}), 200
         
-        all_plans.extend(decrypted_data.get("data", []))
+        all_plans.extend(decrypted_data_list)
         total_pages = math.ceil(total_records / 100)
 
         # Passo 2: Fazer o loop para as páginas restantes
@@ -90,7 +90,7 @@ def get_all_esim_plans():
             
             if response_json.get("code") == "0000":
                 page_data = json.loads(aes_decrypt(response_json["data"]))
-                all_plans.extend(page_data.get("data", []))
+                all_plans.extend(page_data)
 
         return jsonify({"total": total_records, "data": all_plans}), 200
 
@@ -99,6 +99,5 @@ def get_all_esim_plans():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
-# As outras rotas (/create_order, /decrypt_notification) continuam aqui sem alterações.
-# (O código completo das outras rotas que já fizemos continua aqui embaixo)
-# ...
+if __name__ == "__main__":
+    app.run(debug=False)
