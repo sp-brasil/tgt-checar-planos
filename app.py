@@ -10,12 +10,11 @@ from Crypto.Util.Padding import pad, unpad
 app = Flask(__name__)
 
 # --- Suas Credenciais do Ambiente de Teste (as mesmas de antes) ---
-ACCOUNT_ID = "tgt_api_test"
-SIGN_KEY = "ECCB3EBA090A4AE082C49DA66B114892"
-SECRET_KEY = "DB81255FC06344F3"
-VECTOR = "96461F19FC7E57FB"
-API_VERSION = "1.0"
-BASE_URL = "http://enterpriseapiuat.tugegroup.com:8060/api-publicappmodule/"
+ACCOUNT_ID = "RE_simpremium"
+SIGN_KEY = "3GIJ0119BNP3G6UN6A5I6BB4PZS2QVWQ"
+SECRET_KEY = "UYHUR49SEVWFR6WI"
+VECTOR = "0Q75CKOMYKQDKCOO"
+BASE_URL = "http://enterpriseapi.tugegroup.com:8060/api-publicappmodule/"
 
 # --- Funções de Criptografia (sem alterações) ---
 def aes_encrypt(data_str):
